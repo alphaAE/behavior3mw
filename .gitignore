@@ -1,0 +1,21 @@
+
+.idea/
+DBCache/
+Pictures/
+TsBuilder.log
+./build.ts
+*.xlsx#
+*.zip
+game.desc
+tsconfig.json
+dist/game.js
+dist/game.js.map
+.mw/
+*.tsbuildinfo
+# Tools
+DBCache-Bak
+AutoBackup/
+Prefabs/EditingTemplate.cfg
+
+.vscode/*
+!.vscode/launch.json
