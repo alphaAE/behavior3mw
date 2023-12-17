@@ -1,5 +1,5 @@
 import { BehaviorType } from "./BehaviorDefine";
-import { BehaviorTree, BehaviorTreeInstance, Vars, newEnv } from "./BehaviorTree";
+import { BehaviorTree, BehaviorTreeInstance, newEnv } from "./BehaviorTree";
 import { NodeBase } from "./nodes/NodeBase";
 
 /** 节点实例 */
@@ -31,7 +31,7 @@ function newTree(name: string, treeData: any): BehaviorTree {
 const trees: { [key: string]: BehaviorTree } = {};
 
 export const BehaviorTreeManager = {
-    new(name: string, treeData: any, envParams: Vars): BehaviorTreeInstance {
+    new(name: string, treeData: any, envParams: any): BehaviorTreeInstance {
         const env = newEnv(envParams);
         const tree = trees[name] || newTree(name, treeData);
         return {

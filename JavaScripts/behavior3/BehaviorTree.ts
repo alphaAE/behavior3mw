@@ -1,19 +1,16 @@
 import { BehaviorRet } from './BehaviorDefine';
 import { BehaviorNode } from './BehaviorNode';
 
-export type InnerVars = { [key: string]: any };
-export type Vars = { [key: string]: any };
-
 // 定义环境接口
 interface Environment {
     // 内部变量
-    innerVars: InnerVars;
+    innerVars: any;
     // 变量
-    vars: Vars;
+    vars: any;
     // 行为节点栈
     stack: BehaviorNode[];
     // 上次返回值
-    lastRet: any;
+    lastRet: BehaviorRet;
 
     getVar(k: string): any; // 获取变量
     setVar(k: string, v: any): void; // 设置变量
@@ -67,7 +64,7 @@ interface BehaviorTreeInstance {
     set_env: (k: string, v: any) => void;
 }
 
-export function newEnv(params: Vars): Environment {
+export function newEnv(params: any): Environment {
     const env: Environment = {
         innerVars: {},
         vars: {},
