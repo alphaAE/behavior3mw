@@ -1,6 +1,13 @@
 
-export enum BehaviorReturn {
-    FAIL = 0,
-    SUCCESS = 1,
-    RUNNING = 2,
+export enum BehaviorRet {
+    Fail = 0,
+    Success,
+    Running,
+}
+
+export enum BehaviorType {
+    Composite = 0,
+    Decorator,
+    Conditions,
+    Action
 }
