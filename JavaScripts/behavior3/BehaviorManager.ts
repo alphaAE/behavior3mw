@@ -3,21 +3,25 @@ import { BehaviorTree, BehaviorTreeInstance, newEnv } from "./BehaviorTree";
 import { NodeBase } from "./nodes/NodeBase";
 
 /** 节点实例 */
-export const nodeDecorator: Map<string, any> = new Map<string, NodeBase>();
+export const nodeDecorator: Map<string, NodeBase> = new Map<string, NodeBase>();
+
+// let typeMap: Map<BehaviorType, string> = new Map();
+// typeMap.set(BehaviorType.Action, "Action");
+// typeMap.set(BehaviorType.Composite, "Composite");
+// typeMap.set(BehaviorType.Condition, "Condition");
+// typeMap.set(BehaviorType.Decorator, "Decorator");
 
 /** 
  * 节点装饰器
  */
-export function regBehaviorNode(name: string, type: BehaviorType, desc?: string, doc?: string, input?: any, output?: any) {
+export function regBehaviorNode() {
     return function <T extends { new(...args: any[]): NodeBase }>(constructor: T): T {
         const node = new constructor();
-        node.name = name;
-        node.type = type;
-        node.desc = desc;
-        node.doc = doc;
-        node.input = input;
-        node.output = output;
-        nodeDecorator.set(name, node);
+        if (nodeDecorator.get(node.name)) {
+            console.error("睁大你的眼~节点名字重复了" + node.name + ":" + constructor.name)
+            node.name = node.name + "_";
+        }
+        nodeDecorator.set(node.name, node);
         return constructor;
     }
 }
@@ -46,3 +50,22 @@ export const BehaviorTreeManager = {
         };
     },
 };
+
+if (SystemUtil.isPIE) {
+    InputUtil.onKeyDown(Keys.P, () => {
+        Event.dispatchToServer("BehaviorTreeManager");
+    })
+
+    Event.addClientListener("BehaviorTreeManager", () => {
+        console.log("BehaviorTreeManager");
+
+        let res = [];
+        nodeDecorator.forEach(e => {
+            res.push(e);
+        })
+
+        console.log(JSON.stringify(res));
+        DataStorage.asyncSetData("_BehaviorTreeManager", res);
+    })
+
+}

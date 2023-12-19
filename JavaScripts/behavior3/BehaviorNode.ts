@@ -26,37 +26,39 @@ export class BehaviorNode {
         }
     }
 
-    run(env: Environment): any {
-        if (env.getInnerVar(this, "YIELD") == null) {
+    run(env: Environment): BehaviorRet {
+        if (env.getInnerVar(this, "YIELD") == undefined) {
             env.pushStack(this);
         }
 
-        const vars: any[] = [];
+        let vars: any[] = [];
         for (let i = 0; i < (this.data.input || []).length; i++) {
             vars[i] = env.getVar(this.data.input[i]);
         }
-
-        const func = nodeDecorator.get(this.name).run;
+        let ins = nodeDecorator.get(this.name)
+        const func = ins.run;
+        let out: any[] | BehaviorRet;
         if (this.data.input) {
-            vars.push(func(this, env, ...vars.slice(0, this.data.input.length)));
+            out = func(this, env, ...vars.slice(0, this.data.input.length));
         } else {
-            vars.push(func(this, env, ...vars));
+            out = func(this, env, ...vars);
         }
-
-        const ret = vars[0];
-        if (!ret) {
-            throw new Error(this.info);
+        if (out instanceof Array) {
+            if (!out) {
+                throw new Error(this.info);
+            }
         }
+        const ret: BehaviorRet = (out instanceof Array) ? out[0] : out;
 
         if (ret !== BehaviorRet.Running) {
-            env.setInnerVar(this, "YIELD", null);
+            env.setInnerVar(this, "YIELD", undefined);
             env.popStack();
-        } else if (env.getInnerVar(this, "YIELD") == null) {
+        } else if (env.getInnerVar(this, "YIELD") == undefined) {
             env.setInnerVar(this, "YIELD", true);
         }
 
         for (let i = 0; i < (this.data.output || []).length; i++) {
-            env.setVar(this.data.output[i], vars[i + 1]);
+            env.setVar(this.data.output[i], out[i + 1]);
         }
 
         env.lastRet = ret;

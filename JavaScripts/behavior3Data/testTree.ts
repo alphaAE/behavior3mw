@@ -1,4 +1,4 @@
-{
+export const Behavoir3_testTree = {
   "name": "testTree",
   "root": {
     "id": 1,

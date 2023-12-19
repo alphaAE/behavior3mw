@@ -6,8 +6,8 @@ export enum BehaviorRet {
 }
 
 export enum BehaviorType {
-    Composite = 0,
-    Decorator,
-    Conditions,
-    Action
+    Composite = "Composite",
+    Decorator = "Decorator",
+    Condition = "Condition",
+    Action = "Action"
 }

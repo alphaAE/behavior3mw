@@ -1,4 +1,4 @@
-{
+export const Behavoir3_monster = {
   "name": "monster",
   "root": {
     "id": 1,
