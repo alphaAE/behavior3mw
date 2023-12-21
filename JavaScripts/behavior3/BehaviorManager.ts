@@ -1,15 +1,10 @@
-import { BehaviorType } from "./BehaviorDefine";
-import { BehaviorTree, BehaviorTreeInstance, newEnv } from "./BehaviorTree";
-import { NodeBase } from "./nodes/NodeBase";
+import { BehaviorTree, BehaviorTreeInstance, Environment } from "./BehaviorTree";
+import { B3Dec, B3Define, NodeBase } from "./nodes/NodeBase";
 
 /** 节点实例 */
 export const nodeDecorator: Map<string, NodeBase> = new Map<string, NodeBase>();
 
-// let typeMap: Map<BehaviorType, string> = new Map();
-// typeMap.set(BehaviorType.Action, "Action");
-// typeMap.set(BehaviorType.Composite, "Composite");
-// typeMap.set(BehaviorType.Condition, "Condition");
-// typeMap.set(BehaviorType.Decorator, "Decorator");
+const deportDecorator: Map<string, B3Define> = new Map();
 
 /** 
  * 节点装饰器
@@ -17,11 +12,18 @@ export const nodeDecorator: Map<string, NodeBase> = new Map<string, NodeBase>();
 export function regBehaviorNode() {
     return function <T extends { new(...args: any[]): NodeBase }>(constructor: T): T {
         const node = new constructor();
-        if (nodeDecorator.get(node.name)) {
-            console.error("睁大你的眼~节点名字重复了" + node.name + ":" + constructor.name)
-            node.name = node.name + "_";
+        if (!node.define) {
+            console.error("节点没有定义define:" + constructor.name);
+            return;
         }
-        nodeDecorator.set(node.name, node);
+        node.define["name"] = constructor.name;
+        if (nodeDecorator.get(node.define["name"])) {
+            console.error("睁大你的眼~节点名字重复了" + node.define["name"] + ":" + constructor.name)
+            node.define["name"] = node.define["name"] + "_";
+        }
+        node.define["args"] = B3Dec.serMap.get(constructor.name);
+        nodeDecorator.set(node.define["name"], node);
+        deportDecorator.set(node.define["name"], node.define);
         return constructor;
     }
 }
@@ -36,7 +38,7 @@ const trees: { [key: string]: BehaviorTree } = {};
 
 export const BehaviorTreeManager = {
     new(name: string, treeData: any, envParams: any): BehaviorTreeInstance {
-        const env = newEnv(envParams);
+        const env = new Environment(envParams);
         const tree = trees[name] || newTree(name, treeData);
         return {
             tree,
@@ -51,21 +53,14 @@ export const BehaviorTreeManager = {
     },
 };
 
-if (SystemUtil.isPIE) {
-    InputUtil.onKeyDown(Keys.P, () => {
-        Event.dispatchToServer("BehaviorTreeManager");
-    })
-
-    Event.addClientListener("BehaviorTreeManager", () => {
-        console.log("BehaviorTreeManager");
-
+if (SystemUtil.isPIE && SystemUtil.isServer()) {
+    setTimeout(() => {
         let res = [];
-        nodeDecorator.forEach(e => {
+        deportDecorator.forEach(e => {
             res.push(e);
         })
 
-        console.log(JSON.stringify(res));
-        DataStorage.asyncSetData("_BehaviorTreeManager", res);
-    })
-
+        console.log("[Behavior3Manager] OutputNodes " + JSON.stringify(res).length);
+        DataStorage.asyncSetData("node-config.json", res);
+    }, 1)
 }

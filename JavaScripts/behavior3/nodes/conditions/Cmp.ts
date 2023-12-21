@@ -2,22 +2,20 @@ import { BehaviorRet, BehaviorType } from "../../BehaviorDefine";
 import { regBehaviorNode } from "../../BehaviorManager";
 import { BehaviorNode } from "../../BehaviorNode";
 import { Environment } from "../../BehaviorTree";
-import { B3Arg, B3ArgType, NodeBase } from "../NodeBase";
+import { B3Arg, B3ArgType, B3Dec, B3Define, NodeBase } from "../NodeBase";
 
 @regBehaviorNode()
 class Cmp extends NodeBase {
-    name: string = "Cmp";
-    type: BehaviorType = BehaviorType.Condition;
-    desc: string = "比较值";
-    doc: string = "比较值";
+    define: B3Define = new B3Define(
+        BehaviorType.Condition,
+        "比较值", "比较值"
+    ).addInput("存在值");
 
-    public input: string[] = ["inputValue"];
-
-    public args: B3Arg[] = [new B3Arg("eq", B3ArgType.Int, "值")];
+    @B3Dec.ArgDec("比较值", B3ArgType.Number)
+    public eq: number
 
     run(node: BehaviorNode, env: Environment, value: string): [BehaviorRet] {
-        let args = node.args;
-        if (args["eq"] == Number(value)) {
+        if (this.eq == Number(value)) {
             return [BehaviorRet.Success];
         }
         else {

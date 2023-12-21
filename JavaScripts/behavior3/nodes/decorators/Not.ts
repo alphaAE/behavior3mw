@@ -3,14 +3,15 @@ import { BehaviorRet, BehaviorType } from "../../BehaviorDefine";
 import { regBehaviorNode } from "../../BehaviorManager";
 import { BehaviorNode } from "../../BehaviorNode";
 import { Environment } from "../../BehaviorTree";
-import { B3Arg, B3ArgType, NodeBase } from "../NodeBase";
-//TODO:验证
+import { B3Arg, B3ArgType, B3Define, NodeBase } from "../NodeBase";
+
 @regBehaviorNode()
-export class NotNode extends NodeBase {
-    name = 'Not';
-    type = BehaviorType.Decorator;
-    desc = '取反';
-    doc = `将子节点的返回值取反`;
+class Not extends NodeBase {
+    define: B3Define = new B3Define(
+        BehaviorType.Decorator,
+        "取反",
+        `- 只能有一个子节点,多个仅执行第一个\n- 将子节点的返回值取反`
+    )
 
     public run(node: BehaviorNode, env: Environment, arr: any[]) {
         const yieldVal = node.resume(env)[0];

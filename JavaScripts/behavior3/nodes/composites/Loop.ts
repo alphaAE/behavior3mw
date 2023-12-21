@@ -3,15 +3,15 @@ import { BehaviorRet, BehaviorType } from "../../BehaviorDefine";
 import { regBehaviorNode } from "../../BehaviorManager";
 import { BehaviorNode } from "../../BehaviorNode";
 import { Environment } from "../../BehaviorTree";
-import { B3Arg, B3ArgType, NodeBase } from "../NodeBase";
+import { B3Arg, B3ArgType, B3Dec, B3Define, NodeBase } from "../NodeBase";
 //TODO:验证
 @regBehaviorNode()
-export class LoopNode extends NodeBase {
-    name = 'Loop';
-    type = BehaviorType.Composite;
-    desc = '循环执行';
-    public args: B3Arg[] = [new B3Arg("count", B3ArgType.Int, "次数")];
-    public input: ["次数(int)?"]
+class Loop extends NodeBase {
+    define: B3Define = new B3Define(
+        BehaviorType.Composite,
+        "循环执行",
+        "循环执行")
+        .addInput("次数(int)?")
 
     public run(node: BehaviorNode, env: any, countString: string) {
         let count = Number(countString);

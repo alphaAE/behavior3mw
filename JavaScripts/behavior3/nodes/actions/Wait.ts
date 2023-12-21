@@ -2,34 +2,31 @@ import { BehaviorRet, BehaviorType } from "../../BehaviorDefine";
 import { regBehaviorNode } from "../../BehaviorManager";
 import { BehaviorNode } from "../../BehaviorNode";
 import { Environment } from "../../BehaviorTree";
-import { B3Arg, B3ArgType, NodeBase } from "../NodeBase";
+import { B3Arg, B3ArgType, B3Dec, B3Define, NodeBase } from "../NodeBase";
 
 
 @regBehaviorNode()
-export class WaitNode extends NodeBase {
-    public name: string = "Wait";
+class Wait extends NodeBase {
 
-    public desc: string = "等待";
+    define: B3Define = new B3Define(
+        BehaviorType.Action,
+        "等待",
+        "等待一段时间")
 
-    public args: B3Arg[] = [new B3Arg("time", B3ArgType.Int, "时间/tick")];
-
-    public type: BehaviorType = BehaviorType.Action;
-
-    public doc: string = "等待一段时间";
+    @B3Dec.ArgDec("时间(秒)", B3ArgType.Number)
+    public time: number;
 
     public run(node: BehaviorNode, env: Environment): BehaviorRet {
-        const args = node.args;
         const t = node.resume(env)[0];
         if (t) {
             if (TimeUtil.elapsedTime() >= t) {
-                console.log('CONTINUE');
+                // console.log('CONTINUE');
                 return BehaviorRet.Success;
             } else {
-                console.log('WAITING');
+                // console.log('WAITING', TimeUtil.elapsedTime(), t);
                 return BehaviorRet.Running;
             }
         }
-        console.log('Wait', args["time"]);
-        return node.yield(env, TimeUtil.elapsedTime() + args["time"]);
+        return node.yield(env, TimeUtil.elapsedTime() + this.time);
     }
 }

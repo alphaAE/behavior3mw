@@ -3,21 +3,19 @@ import { BehaviorRet, BehaviorType } from "../../BehaviorDefine";
 import { regBehaviorNode } from "../../BehaviorManager";
 import { BehaviorNode } from "../../BehaviorNode";
 import { Environment } from "../../BehaviorTree";
-import { B3Arg, B3ArgType, NodeBase } from "../NodeBase";
+import { B3Arg, B3ArgType, B3Define, NodeBase } from "../NodeBase";
 //TODO:验证
 @regBehaviorNode()
-export class AlwaysFailNode extends NodeBase {
-    name = 'AlwaysFail';
-    type = BehaviorType.Decorator;
-    desc = '始终返回失败';
-    doc = ` 
-    + 只能有一个子节点,多个仅执行第一个
-    + 不管子节点是否成功都返回失败
-    `;
+class AlwaysFail extends NodeBase {
+    define: B3Define = new B3Define(
+        BehaviorType.Decorator,
+        "始终返回失败",
+        `- 只能有一个子节点,多个仅执行第一个\m- 不管子节点是否成功都返回失败`
+    )
 
-    public run(node: BehaviorNode, env: Environment, arr: any[]) {
-        const [yeild, lastRet] = node.resume(env);
-        if (yeild) {
+    public run(node: BehaviorNode, env: Environment) {
+        const [ret, lastRet] = node.resume(env);
+        if (ret) {
             if (lastRet === BehaviorRet.Running) {
                 return lastRet;
             }

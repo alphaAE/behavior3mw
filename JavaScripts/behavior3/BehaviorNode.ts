@@ -36,12 +36,14 @@ export class BehaviorNode {
             vars[i] = env.getVar(this.data.input[i]);
         }
         let ins = nodeDecorator.get(this.name)
-        const func = ins.run;
         let out: any[] | BehaviorRet;
+        ins.define["args"] && ins.define["args"].forEach(e => {
+            ins[e.name] = this.args[e.name]
+        });
         if (this.data.input) {
-            out = func(this, env, ...vars.slice(0, this.data.input.length));
+            out = ins.run(this, env, ...vars.slice(0, this.data.input.length));
         } else {
-            out = func(this, env, ...vars);
+            out = ins.run(this, env, ...vars);
         }
         if (out instanceof Array) {
             if (!out) {
@@ -76,12 +78,12 @@ export class BehaviorNode {
         return ret;
     }
 
-    yield(env: any, arg?: any): any {
-        env.setInnerVar(this, "YIELD", arg || true);
+    yield(env: any, arg: any = false): any {
+        env.setInnerVar(this, "YIELD", arg);
         return BehaviorRet.Running;
     }
 
-    resume(env: any): [any, BehaviorRet] {
+    resume(env: any): [number, BehaviorRet] {
         return [env.getInnerVar(this, "YIELD"), env.lastRet];
     }
 }

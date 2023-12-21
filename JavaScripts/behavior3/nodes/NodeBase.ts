@@ -3,22 +3,68 @@ import { BehaviorNode } from "../BehaviorNode";
 import { Environment } from "../BehaviorTree";
 
 export abstract class NodeBase {
-    /** 名字 */
-    abstract name: string;
-    /** 类型 */
-    abstract type: BehaviorType;
-    /** 描述 */
-    abstract desc: string;
-    /** 备注 */
-    public doc: string;
-    /** 参数 */
-    public args: B3Arg[];
+    abstract define: B3Define;
+
+    node: BehaviorNode;
+
+    abstract run(node: BehaviorNode, env: Environment, ...params: any[]): any[] | BehaviorRet;
+}
+
+export class B3Define {
+
     /** 输入值 */
     public input: string[];
     /** 输出值 */
     public output: string[];
 
-    abstract run(node: BehaviorNode, env: Environment, ...params: any[]): any[] | BehaviorRet;
+    public constructor(
+        /** 类型 */
+        public type: BehaviorType,
+        /** 描述 */
+        public desc: string,
+        /** 备注 */
+        public doc: string
+    ) {
+    }
+
+    addInput(...inputs: string[]) {
+        if (!this.input) this.input = [];
+        this.input.push(...inputs);
+        return this;
+    }
+
+    addOutput(...output: string[]) {
+        if (!this.output) this.output = [];
+        this.output.push(...output);
+        return this;
+    }
+
+}
+
+
+export namespace B3Dec {
+    export const serMap: Map<string, B3Arg[]> = new Map();
+
+    export function ArgDec(desc: string, type: B3ArgType) {
+        let fun = (target: NodeBase, propertyKey: string) => {
+            if (!serMap.has(target.constructor.name)) {
+                serMap.set(target.constructor.name, []);
+            }
+            serMap.get(target.constructor.name).push(
+                new B3Arg(
+                    propertyKey,
+                    type,
+                    desc));
+        }
+        return fun;
+    }
+}
+
+
+export function regBehaviorArg() {
+    return function (constructor: Function) {
+
+    }
 }
 
 export class B3Arg {
@@ -32,7 +78,6 @@ export class B3Arg {
 }
 
 export enum B3ArgType {
-    Int = "int",
-    IntFan = "int?",
+    Number = "int",
     String = "string",
 }

@@ -1,26 +1,51 @@
 import { BehaviorRet } from './BehaviorDefine';
 import { BehaviorNode } from './BehaviorNode';
 
-// 定义环境接口
-interface Environment {
-    // 内部变量
-    innerVars: any;
-    // 变量
-    vars: any;
-    // 行为节点栈
-    stack: BehaviorNode[];
-    // 上次返回值
-    lastRet: BehaviorRet;
 
-    getVar(k: string): any; // 获取变量
-    setVar(k: string, v: any): void; // 设置变量
-    getInnerVar(node: BehaviorNode, k: string): any; // 获取行为节点的内部变量
-    setInnerVar(node: BehaviorNode, k: string, v: any): void; // 设置行为节点的内部变量
-    pushStack(node: BehaviorNode): void; // 将行为节点压入栈
-    popStack(): BehaviorNode | undefined; // 弹出栈顶的行为节点
+export class Environment {
+    // 内部变量
+    innerVars: any = {};
+    // 变量
+    vars: any = {};
+    // 行为节点栈
+    stack: BehaviorNode[] = [];
+    // 上次返回值
+    lastRet: BehaviorRet = null;
+
+    constructor(params: any) {
+        for (const [k, v] of Object.entries(params)) {
+            this[k] = v;
+        }
+    }
+
+    getVar(k: string): any {
+        return this.vars[k];
+    }
+
+    setVar(k: string, v: any): void {
+        if (k === '') return;
+        this.vars[k] = v;
+    }
+
+    getInnerVar(node: BehaviorNode, k: string): any {
+        return this.innerVars[`${k}_${node.id}`];
+    }
+
+    setInnerVar(node: BehaviorNode, k: string, v: any): void {
+        this.innerVars[`${k}_${node.id}`] = v;
+    }
+
+    pushStack(node: BehaviorNode): void {
+        this.stack.push(node);
+    }
+
+    popStack(): BehaviorNode | undefined {
+        const node = this.stack.pop();
+        return node;
+    }
 }
 
-class BehaviorTree {
+export class BehaviorTree {
     public name: string;
     public tick: number;
     public root: BehaviorNode;
@@ -56,7 +81,7 @@ class BehaviorTree {
     }
 }
 
-interface BehaviorTreeInstance {
+export interface BehaviorTreeInstance {
     tree: BehaviorTree;
     run: () => void;
     interrupt: () => void;
@@ -64,39 +89,3 @@ interface BehaviorTreeInstance {
     set_env: (k: string, v: any) => void;
 }
 
-export function newEnv(params: any): Environment {
-    const env: Environment = {
-        innerVars: {},
-        vars: {},
-        stack: [],
-        lastRet: null,
-        getVar(k: string): any {
-            return env.vars[k];
-        },
-        setVar(k: string, v: any): void {
-            if (k === '') return;
-            this.vars[k] = v;
-        },
-        getInnerVar(node: BehaviorNode, k: string): any {
-            return this.innerVars[`${k}_${node.id}`];
-        },
-        setInnerVar(node: BehaviorNode, k: string, v: any): void {
-            this.innerVars[`${k}_${node.id}`] = v;
-        },
-        pushStack(node: BehaviorNode): void {
-            this.stack.push(node);
-        },
-        popStack(): BehaviorNode | undefined {
-            const node = this.stack.pop();
-            return node;
-        },
-    };
-
-    for (const [k, v] of Object.entries(params)) {
-        env[k] = v;
-    }
-
-    return env;
-}
-
-export { BehaviorTree, BehaviorTreeInstance, Environment };
