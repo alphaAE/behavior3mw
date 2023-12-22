@@ -22,6 +22,10 @@ class AlwaysFail extends NodeBase {
             return BehaviorRet.Fail;
         }
 
+        if (node.children.length === 0) {
+            return BehaviorRet.Fail;
+        }
+
         const r = node.children[0].run(env);
         if (r === BehaviorRet.Running) {
             return node.yield(env);

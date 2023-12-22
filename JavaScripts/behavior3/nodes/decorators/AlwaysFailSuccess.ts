@@ -22,6 +22,10 @@ class AlwaysSuccess extends NodeBase {
             return BehaviorRet.Success;
         }
 
+        if (node.children.length === 0) {
+            return BehaviorRet.Success;
+        }
+
         const r = node.children[0].run(env);
         if (r === BehaviorRet.Running) {
             return node.yield(env);

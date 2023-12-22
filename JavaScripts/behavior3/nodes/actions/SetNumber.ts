@@ -9,9 +9,10 @@ class SetNumber extends NodeBase {
 
     define: B3Define = new B3Define(
         BehaviorType.Action,
-        "设置整数",
-        "向环境\\黑板中设置值")
+        "设置数值类型",
+        "向环境中设置数值类型的值")
         .addOutput("value")
+
     @B3Dec.ArgDec("设置的值", B3ArgType.Number)
     public val: number;
 
