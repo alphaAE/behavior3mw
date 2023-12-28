@@ -86,6 +86,6 @@ export interface BehaviorTreeInstance {
     run: () => void;
     interrupt: () => void;
     is_running: () => boolean;
-    set_env: (k: string, v: any) => void;
+    setEnv: (k: string, v: any) => void;
 }
 

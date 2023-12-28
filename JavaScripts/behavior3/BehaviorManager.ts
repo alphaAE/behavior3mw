@@ -45,7 +45,7 @@ export const BehaviorTreeManager = {
             run: () => tree.run(env),
             interrupt: () => tree.interrupt(env),
             is_running: () => env.stack.length > 0,
-            set_env: (k, v) => {
+            setEnv: (k, v) => {
                 if (k === '') return;
                 env[k] = v;
             },

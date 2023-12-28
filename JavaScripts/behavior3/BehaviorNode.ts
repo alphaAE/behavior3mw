@@ -40,10 +40,15 @@ export class BehaviorNode {
         ins.define["args"] && ins.define["args"].forEach(e => {
             ins[e.name] = this.args[e.name]
         });
-        if (this.data.input) {
-            out = ins.run(this, env, ...vars.slice(0, this.data.input.length));
-        } else {
-            out = ins.run(this, env, ...vars);
+        try {
+            if (this.data.input) {
+                out = ins.run(this, env, ...vars.slice(0, this.data.input.length));
+            } else {
+                out = ins.run(this, env, ...vars);
+            }
+        } catch (error) {
+            out = BehaviorRet.Fail;
+            console.error("行为树节点报错" + this.name + ":" + error.stack);
         }
         if (out instanceof Array) {
             if (!out) {
